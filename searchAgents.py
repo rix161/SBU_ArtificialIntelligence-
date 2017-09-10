@@ -287,6 +287,9 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
+        self.noOfCornersReached = 0
+        self.visitedCorner = set()
+
         "*** YOUR CODE HERE ***"
 
     def getStartState(self):
@@ -295,14 +298,27 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        tempState = state;
+
+        for corner in self.corners:
+           if(corner in self.visitedCorner): continue
+
+           if(state[0] == corner[0] and state[1] == corner[1]):
+               self.visitedCorner.add(state)
+               self.noOfCornersReached+=1
+               if (self.noOfCornersReached == len(self.corners)):
+                   return 104
+               return 101
+
+        return False
+
 
     def getSuccessors(self, state):
         """
@@ -325,6 +341,13 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x, y = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if(not hitsWall):
+                successors.append(((nextx,nexty),action,1))
+                ##TODO find how to get weights from prev ex
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

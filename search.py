@@ -132,7 +132,6 @@ def depthFirstSearch(problem):
             fringeList.push(element)
             parentMap[element] = fringeElement
 
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
@@ -156,7 +155,7 @@ def breadthFirstSearch(problem):
     pathList = list()
 
     initState = problem.getStartState()
-    for element in problem.getSuccessors(problem.getStartState()):
+    for element in problem.getSuccessors(initState):
         fringeList.push(element);
         parentMap[element] = (initState,"START",1)
 
@@ -170,10 +169,23 @@ def breadthFirstSearch(problem):
         visitedSet.add(fringeElement[0])
 
 
-        if(problem.isGoalState(fringeElement[0])):
-            pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
+        result = problem.isGoalState(fringeElement[0])
+        if(result==True):
+            pathList = generatePathList(fringeElement,parentMap,initState)
             print("length:" + str(len(pathList)))
             return pathList
+        elif(result>100):
+            temppath = generatePathList(fringeElement, parentMap, initState)
+            for pathele in temppath:
+                pathList.append(pathele)
+
+            if(result==104):
+                return pathList
+            else:
+                visitedSet.clear()
+                parentMap.clear()
+                fringeList = util.Queue()
+                initState = fringeElement[0]
 
         for element in problem.getSuccessors(fringeElement[0]):
             fringeList.push(element)
@@ -273,6 +285,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if(problem.isGoalState(fringeElement[0])):
             pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
             return pathList
+
 
         for element in problem.getSuccessors(fringeElement[0]):
             newElement = (element[0],element[1],element[2]+fringeElement[2]+heuristic( element[0],problem))
