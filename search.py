@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -121,8 +122,10 @@ def depthFirstSearch(problem):
         visitedSet.add(fringeElement[0])
 
 
+
         if(problem.isGoalState(fringeElement[0])):
             pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
+            print("length:"+str(len(pathList)))
             return pathList
 
         for element in problem.getSuccessors(fringeElement[0]):
@@ -169,6 +172,7 @@ def breadthFirstSearch(problem):
 
         if(problem.isGoalState(fringeElement[0])):
             pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
+            print("length:" + str(len(pathList)))
             return pathList
 
         for element in problem.getSuccessors(fringeElement[0]):
@@ -179,7 +183,48 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    def generatePathList(element,parentMap,finalState):
+
+        pathList = []
+
+        while(finalState!=parentMap[element][0]):
+            pathList.append(element[1])
+            element = parentMap[element]
+
+        pathList.append(element[1])
+        pathList.reverse()
+        return pathList
+
+    fringeList = util.PriorityQueue()
+
+    visitedSet = set()
+    parentMap = {};
+    pathList = list()
+
+    initState = problem.getStartState()
+    for element in problem.getSuccessors(problem.getStartState()):
+        fringeList.push(element,element[2]);
+        parentMap[element] = (initState,"START",1)
+
+    while(not fringeList.isEmpty()):
+
+        fringeElement = fringeList.pop()
+
+        if(fringeElement[0] in visitedSet):
+            continue
+
+        visitedSet.add(fringeElement[0])
+
+
+        if(problem.isGoalState(fringeElement[0])):
+            pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
+            return pathList
+
+        for element in problem.getSuccessors(fringeElement[0]):
+            newElement = (element[0],element[1],element[2]+fringeElement[2])
+            fringeList.push(newElement,newElement[2])
+            parentMap[newElement] = fringeElement
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -191,7 +236,48 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    def generatePathList(element,parentMap,finalState):
+
+        pathList = []
+
+        while(finalState!=parentMap[element][0]):
+            pathList.append(element[1])
+            element = parentMap[element]
+
+        pathList.append(element[1])
+        pathList.reverse()
+        return pathList
+
+    fringeList = util.PriorityQueue()
+
+    visitedSet = set()
+    parentMap = {};
+    pathList = list()
+
+    initState = problem.getStartState()
+    for element in problem.getSuccessors(problem.getStartState()):
+        fringeList.push(element,element[2]+heuristic( element[0],problem));
+        parentMap[element] = (initState,"START",1)
+
+    while(not fringeList.isEmpty()):
+
+        fringeElement = fringeList.pop()
+
+        if(fringeElement[0] in visitedSet):
+            continue
+
+        visitedSet.add(fringeElement[0])
+
+
+        if(problem.isGoalState(fringeElement[0])):
+            pathList = generatePathList(fringeElement,parentMap,problem.getStartState())
+            return pathList
+
+        for element in problem.getSuccessors(fringeElement[0]):
+            newElement = (element[0],element[1],element[2]+fringeElement[2]+heuristic( element[0],problem))
+            fringeList.push(newElement,newElement[2])
+            parentMap[newElement] = fringeElement
 
 
 # Abbreviations
